@@ -1,5 +1,7 @@
 import { Bot } from "grammy";
 import dotenv from "dotenv";
+import { startHandler } from "./handlers/generalHandlers";
+import { loginUserMiddleware } from "./middlewares/authMiddleware";
 dotenv.config();
 
 let token = process.env.BOT_TOKEN;
@@ -11,9 +13,19 @@ if (!token) {
 
 let bot = new Bot(token);
 
+bot.api.setMyCommands([
+    {
+        command: "start",
+        description: "Start the bot"
+    }
+]);
+
+bot.use(loginUserMiddleware)
 
 bot.command("start", (ctx) => {
-    ctx.reply("Hello, world!");
+    new Promise(async () => {
+        await startHandler(ctx);
+    });
 });
 
 (async () => {

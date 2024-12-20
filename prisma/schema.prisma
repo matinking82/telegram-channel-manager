@@ -23,4 +23,5 @@ model user {
   telegramId String    @id @default(cuid())
   channel    channel[]
   dataJson   String?
+  status     String
 }
