@@ -1,7 +1,8 @@
 import { Bot } from "grammy";
 import dotenv from "dotenv";
-import { startHandler } from "./handlers/generalHandlers";
+import { messagesHandler, startHandler, userCallBackHandler } from "./handlers/generalHandlers";
 import { loginUserMiddleware } from "./middlewares/authMiddleware";
+import logger from "./core/logger";
 dotenv.config();
 
 let token = process.env.BOT_TOKEN;
@@ -27,6 +28,42 @@ bot.command("start", (ctx) => {
         await startHandler(ctx);
     });
 });
+
+
+bot.on("message", async (ctx) => {
+    new Promise(async () => {
+        try {
+            await messagesHandler(ctx);
+        } catch (error) {
+            logger.error(error.message, {
+                section: "bot.ts",
+            });
+
+            await ctx.reply("عملیات با خطا مواجه شد❌");
+        }
+    });
+});
+
+bot.on("callback_query:data", async (ctx) => {
+    new Promise(async () => {
+        try {
+            await userCallBackHandler(ctx);
+        } catch (error) {
+            logger.error(error.message, {
+                section: "bot.ts",
+            });
+
+            await ctx.reply("عملیات با خطا مواجه شد❌");
+        }
+    });
+});
+
+bot.catch((error) => {
+    logger.error(error.message, {
+        section: "bot.ts",
+    });
+});
+
 
 (async () => {
     let username = (await bot.api.getMe()).username;

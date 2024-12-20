@@ -10,7 +10,6 @@ export const loginUserMiddleware = async (ctx: Context, next: NextFunction) => {
             logger.info("User is null in loginUserMiddleware", {
                 section: "UserLoginMiddleware",
             });
-            await ctx.reply("باید  با اکانت تلگرام وارد شوید").catch(() => { })
             return;
         }
 

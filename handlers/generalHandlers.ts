@@ -1,8 +1,9 @@
 import { Context } from "grammy";
 import logger from "../core/logger";
-import { cancellOptions, startKeyboard } from "../core/keyboards";
+import { cancellOptions, startKeyboard, startKeyboardOptions } from "../core/keyboards";
 import { getUserState, setUserState } from "../services/userServices";
 import { UserState } from "../core/enums";
+import { addChannelEnterIdHandler, addChannelHandler, myChannelsHandler } from "./manageChannelsHandler";
 
 export const startHandler = async (ctx: Context) => {
     let message = `سلام به ربات مدیریت کانال خوش آمدید\nیکی از گزینه های زیر را انتخاب کنید`;
@@ -48,16 +49,21 @@ export const messagesHandler = async (ctx: Context) => {
 
     if (state === UserState.start) {
         switch (text) {
-
+            case startKeyboardOptions.addChannel:
+                return await addChannelHandler(ctx);
+            case startKeyboardOptions.myChannels:
+                return await myChannelsHandler(ctx);
         }
     }
 
-    logger.info(`User ${ctx.from.id} sent a message in state : ${getState}`);
+    logger.info(`User ${ctx.from.id} sent a message in state : ${state}`);
 
     switch (state) {
         case UserState.start:
             await ctx.reply('متوجه منظور شما نشدم ❌');
             return await startHandler(ctx);
+        case UserState.addChannelEnterId:
+            return await addChannelEnterIdHandler(ctx);
 
     }
 }
@@ -71,6 +77,6 @@ export const userCallBackHandler = async (ctx: Context) => {
     );
 
     switch (callBackQ[0]) {
-        
+
     }
 }
